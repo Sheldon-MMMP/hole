@@ -20,7 +20,9 @@ import {
   FormItem,
   Message,
   Skeleton,
-  SkeletonItem
+  SkeletonItem,
+  Carousel,
+  CarouselItem
 } from 'element-ui';
 
 const element = [
@@ -42,7 +44,9 @@ const element = [
   RadioButton,
   FormItem,
   Skeleton,
-  SkeletonItem
+  SkeletonItem,
+  Carousel,
+  CarouselItem
 ]
 
 Vue.prototype.$message = Message;

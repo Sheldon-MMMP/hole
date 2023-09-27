@@ -18,17 +18,15 @@
           </div>
         </go-back>
         <!-- 用户照片展示轮播图 -->
-        <div class="swiper w-full overflow-hidden h-100 fixed" id="swiper1">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide w-full flexCC" v-for="(item, index) in clerkInfo.carouselList" :key="index">
-              <img :src="$Url(item)" alt="" class="w-full">
-            </div>
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
+        <el-carousel :interval="5000" arrow="never" loop autoplay indicator-position="none">
+          <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index" >
+            <el-image :src="$Url(item)" alt="" class="w-full" />
+          </el-carousel-item>
+        </el-carousel>
+
         <!-- 店员信息 -->
         <div class="absolute w-full bg-white z-99 rounded-t-4xl swipe-container box-border flex flex-col"
-         style="box-shadow:0 4rem 10rem 10rem rgba(var(--primary-color),0.6);"
+          style="box-shadow:0 4rem 10rem 10rem rgba(var(--primary-color),0.6);"
           :style="{ top: imageSpacePX, height: infoHeight }">
           <el-skeleton :rows="10" animated class="mt-10" v-if="loading" />
           <template v-else>
@@ -111,9 +109,6 @@
 </template>
 
 <script>
-import 'swiper/css/swiper.min.css';
-import 'swiper/js/swiper.min';
-import Swiper from 'swiper';
 import goBack from '@/components/go-back.vue';
 import { CLERK_INFO_MES, PRICE_TABLE } from '@/services/api'
 import requireNone from '@/components/require-none.vue';
@@ -234,19 +229,6 @@ export default {
     window.addEventListener('scroll', this.Scrollbottom);  //页面加载时监听滚动事件
     // 计算结果（单位为像素）
     this.infoHeight = resultInPixels + "px";
-    //设置轮播图动画
-    new Swiper("#swiper1", {
-      direction: "horizontal",
-      speed: 800,
-      loop: true,
-      autoplay: true,
-      observer: true,
-      observeParents: true,
-      effect: "slide",
-      slidesPerView: "auto",
-      centeredSlides: true,
-      pagination: { el: '.swiper-pagination' }
-    });
   }
 }
 

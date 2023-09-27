@@ -65,4 +65,5 @@ export default {
 .isHome {
   background-color: #fdf7fd;
 }
+
 </style>
