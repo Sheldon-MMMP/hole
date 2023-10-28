@@ -1,13 +1,8 @@
 <template>
   <div id="app" class="relative">
-    <Transition 
-      name="overflow-hidden absolute h-100vh w-100vw animate"
-      :enter-active-class="`${pageAnimate.animate} ${pageAnimate.enter}`"
-      :leave-active-class="`${pageAnimate.animate} ${pageAnimate.leave}`">
-      <KeepAlive :include="include" :max="10">
-        <router-view></router-view>
-      </KeepAlive>
-    </Transition>
+    <KeepAlive :include="include" :max="10">
+      <router-view></router-view>
+    </KeepAlive>
   </div>
 </template>
 
@@ -17,23 +12,30 @@ import { errPath } from './router/path';
 export default {
   name: 'App',
   async created() {
-    const [val, err] = await CLERK_LEVEL_LIST();
-    if (err) return console.error(err);
-    this.$store.dispatch('setClerkLevel', val?.data)
+    const clerkLevelList = this.$store.state.clerkLevel.clerkLevelList;
+    if (clerkLevelList.length === 0) {
+      const [val, err] = await CLERK_LEVEL_LIST();
+      if (err) return console.error(err);
+      this.$store.dispatch('clerkLevel/setClerkLevel', val?.data)
+    }
+
+    // 验证是否登陆
+    const openId = this.$store.getters['userInfo/getOpenIdX'];
+    console.log(openId);
   },
   data() {
     return {
       include: ['/'],
-      pageAnimate: { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft',animate:"animate__animated" },
+      pageAnimate: { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" },
     }
   },
   watch: {
     $route(to, from) {
       if (to.name === errPath || from.name === errPath) this.pageAnimate.animate = "";
       else if (to.matched.length < from.matched.length)
-        this.pageAnimate = { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft',animate:"animate__animated" }
+        this.pageAnimate = { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" }
       else
-        this.pageAnimate = { enter: 'animate__slideInLeft', leave: 'animate__slideOutRight',animate:"animate__animated" }
+        this.pageAnimate = { enter: 'animate__slideInLeft', leave: 'animate__slideOutRight', animate: "animate__animated" }
       if (to.meta.keepAlive) {
         !this.include.includes(to.name) && this.include.push(to.name);
       }
@@ -50,6 +52,12 @@ export default {
 </script>
 
 <style lang="scss">
+#app {
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
 .pageContent {
   padding: 0 $pageMargins;
   min-height: 100vh;
@@ -65,62 +73,5 @@ button {
   outline: none;
   /*清除默认背景 */
   background-color: transparent;
-}
-
-@-webkit-keyframes slideInRight {
-  from {
-    -webkit-transform: translate3d(100%, 0, 0);
-    transform: translate3d(100%, 0, 0);
-    visibility: visible;
-  }
-
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-@keyframes slideInRight {
-  from {
-    -webkit-transform: translate3d(100%, 0, 0);
-    transform: translate3d(100%, 0, 0);
-    visibility: visible;
-  }
-
-  to {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-}
-.animate__slideInRight {
-  -webkit-animation-name: slideInRight;
-  animation-name: slideInRight;
-}
-@-webkit-keyframes slideOutLeft {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    visibility: hidden;
-    -webkit-transform: translate3d(-100%, 0, 0);
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-@keyframes slideOutLeft {
-  from {
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    visibility: hidden;
-    -webkit-transform: translate3d(-100%, 0, 0);
-    transform: translate3d(-100%, 0, 0);
-  }
-}
-.animate__slideOutLeft {
-  -webkit-animation-name: slideOutLeft;
-  animation-name: slideOutLeft;
 }
 </style>

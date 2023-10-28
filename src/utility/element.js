@@ -22,11 +22,14 @@ import {
   Skeleton,
   SkeletonItem,
   Carousel,
-  CarouselItem
+  CarouselItem,
+  InputNumber,
+  Popover
 } from 'element-ui';
 
 const element = [
   Form,
+  FormItem,
   Avatar,
   Empty,
   Dropdown,
@@ -42,11 +45,12 @@ const element = [
   Radio,
   RadioGroup,
   RadioButton,
-  FormItem,
   Skeleton,
   SkeletonItem,
   Carousel,
-  CarouselItem
+  CarouselItem,
+  InputNumber,
+  Popover
 ]
 
 Vue.prototype.$message = Message;

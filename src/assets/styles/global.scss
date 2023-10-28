@@ -32,4 +32,8 @@ $white-color:rgb(var(--white-color));
 // 页面边距变量
 $pageMargins: 1rem;
 
-$primary-black-color: #4b164c
+$primary-black-color: #4b164c;
+
+::-webkit-scrollbar {
+  display: none;
+}

@@ -9,15 +9,7 @@
       <div class="text-1xl mt-2" style="color:rgba(107, 114, 128) ;">WELCOME HOLE</div>
     </div>
     <!-- 钱包 -->
-    <div class="flex justify-between items-center w-full h-16 bg-primary mt-5 px-4 box-border rounded-2xl">;
-      <div class="text-white flex flex-row">
-        <div class="mr-2">
-          <img src="../../../assets/icon/user/wallet.svg" alt="">
-        </div>
-        我的钱包
-      </div>
-      <div class="money w-30 h-10 bg-primary-black rounded-full text-white flex justify-center items-center">50元</div>
-    </div>
+    <wallet-money></wallet-money>
     <!-- 背景变色区 -->
     <div style="background-color: #f9fafb;" class="ribbon flex-1">
       <!-- 订单 -->
@@ -46,8 +38,12 @@
 
 <script>
 import { orderListPath, userPath } from '@/router/path'
+import walletMoney from '@/components/wallet-money.vue'
 export default {
   name:userPath,
+  components:{
+    walletMoney
+  },
   data() {
     return {
       name: "Sheldon",

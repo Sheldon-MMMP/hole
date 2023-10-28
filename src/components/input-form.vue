@@ -1,4 +1,5 @@
 <template>
+  <!-- 使用该组件需要在外面包装一个elForm组件 -->
   <el-form-item :label="title" class="font-semibold">
     <el-input v-model="input" :placeholder="placeholder" :type="type" :maxlength="maxlength"
       :show-word-limit="type === 'textarea'" class="form-input">
@@ -27,17 +28,17 @@ export default {
       default: 'text'
     },
     value: {
-      type: String,
+      type: [String,Number],
       default: ''
     },
     maxlength: {
       type: [Number],
-      default: 10
+      default: 20
     }
   },
   data() {
     return {
-      input: this.value,
+      input: "",
     }
   },
   watch: {
@@ -45,6 +46,11 @@ export default {
       deep: true,
       handler: function (newValue) {
         this.$emit('input', newValue)
+      }
+    },
+    value:{
+      handler:function(newValue){
+        this.input=newValue
       }
     }
   }

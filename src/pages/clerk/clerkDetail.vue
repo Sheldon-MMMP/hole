@@ -18,21 +18,21 @@
           </div>
         </go-back>
         <!-- 用户照片展示轮播图 -->
-        <el-carousel :interval="5000" arrow="never" loop autoplay indicator-position="none">
-          <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index" >
+        <el-carousel :interval="5000" arrow="never" loop autoplay indicator-position="none"
+          class="fixed top-0 h-500px w-full">
+          <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index">
             <el-image :src="$Url(item)" alt="" class="w-full" />
           </el-carousel-item>
         </el-carousel>
 
+
         <!-- 店员信息 -->
-        <div class="absolute w-full bg-white z-99 rounded-t-4xl swipe-container box-border flex flex-col"
+        <div class="absolute w-full bg-white z-99 rounded-t-4xl swipe-container box-border" ref="info"
           style="box-shadow:0 4rem 10rem 10rem rgba(var(--primary-color),0.6);"
           :style="{ top: imageSpacePX, height: infoHeight }">
           <el-skeleton :rows="10" animated class="mt-10" v-if="loading" />
           <template v-else>
-            <div class="relative w-full h-9 flex justify-center items-center">
-              <!-- 样式滑块 -->
-              <div class="w-20 h-1.5 rounded-full" style="background-color: #E5E6EB;"></div>
+            <div class="w-full flex justify-center items-center">
               <!-- 用户名称 -->
               <div class="absolute text-white -top-18">
                 <div class="flexAC flex-row">
@@ -42,8 +42,12 @@
                 <div class="text-center">欢迎您，来到我的店铺</div>
               </div>
             </div>
+            <div class="w-full flexCC h-10">
+              <!-- 样式滑块 -->
+              <div class="w-20 h-1 rounded-full" style="background-color: #E5E6EB;"></div>
+            </div>
             <!-- 店员内容 -->
-            <div :class="['flex-1 px-5', { 'overflow-x-scroll': isScrollBottom }]">
+            <div :class="[`px-5 h-[calc(100%-2.5rem)] ${hidden}`]">
               <!-- 个人介绍 -->
               <div>
                 <div class="Classification">个人介绍</div>
@@ -109,16 +113,18 @@
 </template>
 
 <script>
+import { giftPath, orderMenuPath } from "@/router/path";
 import goBack from '@/components/go-back.vue';
 import { CLERK_INFO_MES, PRICE_TABLE } from '@/services/api'
 import requireNone from '@/components/require-none.vue';
 import clerkAudio from '@/components/clerk-audio.vue';
 import labelComponent from '@/components/label.vue';
-const viewportHeight = window.innerHeight;
+const viewportHeight = document.body.clientHeight;
 // 获取1rem的值
 const remValue = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+const remInPixels20 = 17 * remValue;
 // 计算8rem的像素值
-const remInPixels20 = 20 * remValue;
 const remInPixels8 = 8 * remValue;
 const resultInPixels = viewportHeight - remInPixels8;
 export default {
@@ -133,12 +139,20 @@ export default {
       for (let item in this.clerkInfo) {
         this.clerkInfo[item] = data[item];
       }
-      const img = new Image();
-      let imageLoadComplete = 0;
-      img.src = data.carouselList[0];
-      img.onload = () => {
-        this.imageSpace = remInPixels20;
+      const img = [];
+      const carouselList = data.carouselList
+      for (let item in carouselList) {
+        img[item] = new Image();
+        img[item].src = carouselList[item]
+        img[item].onload = () => {
+          console.log('我变了');
+          this.imageSpace = remInPixels20;
+          img.forEach((imageItem)=>{
+            imageItem.onload = null;
+          })
+        }
       }
+
       this.loading = false;
     }
     const Level = this.clerkInfo.level
@@ -157,6 +171,7 @@ export default {
   },
   data() {
     return {
+      hidden: "overflow-x-scroll",
       // 加载动画
       loading: true,
       // 是否显示订单选择页
@@ -168,7 +183,6 @@ export default {
         { name: "喜欢", iconPath: require("@/assets/icon/clerkDetail/like.svg"), bgClass: "bg-primary" }
       ],
       //是否启用店员内部滚动
-      isScrollBottom: false,
       //店员信息区域覆盖图片的距离，越高覆盖越少
       imageSpace: remInPixels8,
       // 店员信息展示的高度
@@ -200,7 +214,7 @@ export default {
     },
     positionShow() {
       const position = this.clerkInfo.position
-      return position ? position : "中国"
+      return position ?? "中国"
     }
   },
   methods: {
@@ -208,25 +222,42 @@ export default {
     onBottom(name) {
       switch (name) {
         case this.bottomButton[0].name: this.$refs.goBack.goBack(); break;
-        case this.bottomButton[1].name: this.$router.push(); break;
+        case this.bottomButton[1].name:
+          if (this.price.length)
+            this.$router.push({
+              name: orderMenuPath,
+              params: {
+                price: this.price,
+                clerkId: this.$route.query.clerkId,
+                level: this.clerkInfo.level
+              }
+            });
+          else
+            this.$message({
+              message: "订单信息获取失败，请刷新网页",
+              type: "error"
+            })
+          break;
       }
     },
-    // 返回上一个页面
     Scrollbottom() {
-      let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-      let clientHeight = document.documentElement.clientHeight;
-      let scrollHeight = resultInPixels + remInPixels20 - 100;
-      if (scrollTop + clientHeight >= scrollHeight) {
-        return this.isScrollBottom = true;
+      const app = document.getElementById("app");
+      let scrollTop = app.scrollTop || document.body.scrollTop;
+      let windowHeight = app.clientHeight || document.body.clientHeight;
+      let scrollHeight = app.scrollHeight || document.body.scrollHeight;
+      // 减10是为了防止部分手机浏览器不能划到底部
+      if (scrollTop + windowHeight >= scrollHeight - 100) {
+        this.hidden = "overflow-x-scroll"
+      } else {
+        this.hidden = "overflow-hidden"
       }
-      this.isScrollBottom = false;
     },
   },
   destroyed() {
-    window.removeEventListener('scroll', this.Scrollbottom) //页面离开后销毁监听事件
+    window.removeEventListener('touchmove', this.Scrollbottom)
   },
   mounted() {
-    window.addEventListener('scroll', this.Scrollbottom);  //页面加载时监听滚动事件
+    window.addEventListener('touchmove', this.Scrollbottom, true);  //页面加载时监听滚动事件
     // 计算结果（单位为像素）
     this.infoHeight = resultInPixels + "px";
   }

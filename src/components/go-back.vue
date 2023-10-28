@@ -2,7 +2,7 @@
   <div class="py-3 w-full box-border z-999 flex justify-between">
     <div class="border-solid border-1 w-8 h-8 flexCC rounded-full" :class="`${borderColor}`" @click="goBack">
       <img :src="iconPath">
-    </div>
+    </div>  
     <slot></slot>
     <div class="w-8 h-8" v-if="isCenter"></div>
   </div>

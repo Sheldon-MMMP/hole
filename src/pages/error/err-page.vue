@@ -14,7 +14,7 @@ export default {
   },
   computed: {
     setMsg() {
-      return this.$route.params.msg??this.$store.state.params.params.msg??'未知错误';
+      return this.$route.params.msg??this.$store.state.params.msg??'未知错误';
     },
   },
   methods: {

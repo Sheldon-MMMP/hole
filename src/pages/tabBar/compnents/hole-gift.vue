@@ -29,36 +29,21 @@
           <span>{{ item.name }}</span>
         </div>
       </div>
-      <span class="my-3 inline-block">其他要求</span>
-      <div class="w-full">
-        <input type="text" v-model="otherLabel"
-          class="border-solid border-2 border-primary rounded-2xl h-13 text-base px-4 box-border w-full"
-          placeholder="以上没有你想要的，可以在这里添加">
-      </div>
     </div>
-    <!-- 用户信息 -->
-    <span class="my-3 inline-block">微信号</span>
-    <div class="w-full overflow-hidden">
-      <input type="text" v-model="wechat"
-        class="border-solid border-2 border-primary rounded-2xl h-13 text-base px-4 box-border w-full"
-        placeholder="请你填写你的微信号或者手机号">
-    </div>
-    <button type="submit"
+    <el-button type="submit"
       class="mt-10 box-border bg-primary text-white w-full h-15 rounded-2xl button text-base font-semibold"
-      style="font-family: HarmonyOS;">随机匹配</button>
+      @click="toOrderMenu"
+      style="font-family: HarmonyOS;">随机匹配</el-button>
   </div>
 </template>
 
 <script>
 import { giftPath } from '@/router/path';
+import { orderMenuPath } from '@/router/path';
 export default {
   name:giftPath,
   data() {
     return {
-      //微信
-      wechat: '',
-      // 标签
-      otherLabel: "",
       label: [
         { id: 1, name: "Gaming", iconPath: "https://imgapi.cn/api.php" },
         { id: 2, name: "Gaming", iconPath: "https://imgapi.cn/api.php" },
@@ -94,6 +79,19 @@ export default {
       } else {
         this.selectLabel.splice(index, 1);
       }
+    },
+    toOrderMenu(){
+      let remark="";
+      for(let item in this.selectLabel){
+        remark += ","+this.label[item].name
+      }
+      this.$router.push({
+        name:orderMenuPath,
+        params:{
+          remark,
+          sex:this.selectGender
+        }
+      });
     }
   },
   computed: {

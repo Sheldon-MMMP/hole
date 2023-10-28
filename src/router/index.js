@@ -91,9 +91,14 @@ const routes = [
     component: () => import("@/pages/search/search-page.vue")
   },
   {
-    path:path.orderTakePath,
-    name:path.orderTakePath,
-    component :()=>import('@/pages/order/order-take.vue')
+    path: path.orderTakePath,
+    name: path.orderTakePath,
+    component: () => import('@/pages/order/order-take.vue')
+  },
+  {
+    path: path.moneyRecharge,
+    name: path.moneyRecharge,
+    component: () => import("@/pages/order/money-recharge.vue")
   }
 ]
 
@@ -101,9 +106,13 @@ export default new router({
   routes,
   // 对于页面跳转，全部都返回到页面顶部。
   scrollBehavior(to, from, savedPosition) {
-    if(to.name!==from.name){
-      store.dispatch("setParams", to.params)
+    if (to.name !== from.name) {
+      store.dispatch("params/setParams", to.params)
     }
-    return { x: 0, y: 0 };
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
   },
 })

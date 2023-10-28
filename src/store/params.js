@@ -1,10 +1,14 @@
+const getDefaultState = () => ({})
+
+
 const params = {
-  state: () => ({}),
+  state: getDefaultState(),
   mutations: {
     SET_PARAMS(state, data) {
-      console.log('SET_PARAMS', data);
-      for (let key in data)
-        state[key] = data[key]  
+      for(let item in state){
+        delete state[item]
+      }
+      Object.assign(state,data)
     },
   },
   actions: {

@@ -9,6 +9,7 @@ export const errPath = '/error'
 export const orderListPath = '/order/list'
 export const orderMenuPath = '/order/select'
 export const orderTakePath = "/order/take"
+export const moneyRecharge = "/money/recharge"
 
 // clerk
 export const clerkDetailPath = '/clerk/detail'

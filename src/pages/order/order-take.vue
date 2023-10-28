@@ -7,7 +7,7 @@
       <el-image :src="hintImage" fit="cover" class="h-155px w-full rounded-2xl"></el-image>
       <div class="mt-5">
         <div class="title text-24px">
-          {{ pageStyle.title }}
+          {{ getTitle }}
         </div>
         <div class="mt-24px">
           <div class="flex">
@@ -15,9 +15,9 @@
               <div class="subhead text-[#898989] text-14px mb-10px">名称</div>
               <div class="text-[#120D26] text-18px">{{ orderInfo.userName }}</div>
             </div>
-            <div class="flex-1">
+            <div class="flex-1" v-if="!openIdAuth">
               <div class="subhead text-[#898989] text-14px mb-10px">微信号</div>
-              <div class="text-[#120D26] text-18px">{{ orderInfo.wechat }}</div>
+              <div class="text-[#120D26] text-18px">{{ orderInfo.wxNumber }}</div>
             </div>
           </div>
           <div class="flex mt-5">
@@ -45,14 +45,18 @@
         </div>
       </div>
     </div>
-    <el-button type="primary" :class="`rounded-2xl w-full mt-16px h-48px bg-${pageStyle.buttonColor}`">{{
-      pageStyle.buttonText }}</el-button>
+    <el-button @click="onBtn" type="primary" :disabled="getButtonStyle.disabled"
+      :class="`rounded-2xl w-full mt-16px h-48px bg-${getButtonStyle.btnColor}`">{{
+        getButtonStyle.text }}</el-button>
   </div>
 </template>
 
 <script>
 import goBack from '@/components/go-back.vue';
-import { ORDER_DETAIL } from '@/services/api'
+import { errPath } from '@/router/path';
+import { ORDER_DETAIL, ASSIGN_ACCEPT, CLERK_ORDERTAKING } from '@/services/api';
+import { mapGetters } from 'vuex';
+
 export default {
   components: {
     goBack
@@ -66,35 +70,106 @@ export default {
         clerkName: "未知",
         createTime: '无',
         comment: "无",
-        wechat: "未知"
+        wxNumber: "未知",
+        openId: "",
+        clerkId: "",
       },
-      pageStyle: { title: "指定单", buttonColor: "primary", buttonText: "开始接单" }
     }
   },
-  computed: {
-  },
-  async beforeCreate() {
-    const orderId = this.$route.params?.orderId ?? this.$store.params?.params.orderId??'123123123131';
-    if (!orderId) {
-      this.$message.error('订单ID不存在');
-      return;
-    }
+  async mounted() {
+    const orderId = this.getOrderId();
     const [val, error] = await ORDER_DETAIL(orderId);
-    if (error) {
-      this.$message.error(error);
-      return;
+    if (error || val.code != 2000 || this.openIdAuth) {
+      this.toError("订单被抢");
     }
-    for (const key in val.data) {
-      if (Object.hasOwnProperty.call(val.data, key)) {
-        this.orderInfo[key] = val.data[key];
-      }
-    }
-    if (!this.orderInfo.orderType) {
-      this.pageStyle = { title: "盲盒单", buttonColor: "primary-black", buttonText: "抢下订单" };
-    }
+    this.orderInfo = val.data
+  },
 
+  computed: {
+    //获取当前店员的id
+    ...mapGetters("userInfo", ['getOpenIdX']),
+    getTitle() {
+      return this.orderInfo.orderType ? "指定单" : "盲盒单";
+    },
+    openIdAuth() {
+      const openId = this.getOpenIdX;
+      const openIdReq = this.orderInfo.clerkOpenId;
+      return (openIdReq && openIdReq !== openId)
+    },
+    getButtonStyle() {
+      const buttonStyle = [
+        { text: "抢下订单", btnColor: "primary-black" },
+        { text: "开始接单", btnColor: "primary" },
+        { text: "订单进行中", btnColor: "primary-black", disabled: true },
+        { text: "订单已完成", btnColor: "primary-black", disabled: true },
+        { text: "订单出现问题", btnColor: "primary-black", disabled: true }
+      ];
+      const status = this.orderInfo.status ?? 1
+      return buttonStyle[status];
+    }
+  },
+
+  methods: {
+    getOrderId() {
+      const orderId = this.$route.query?.orderId;
+      if (!orderId) {
+        const errMsg = "获取orderId失败"
+        this.toError(errMsg);
+        throw new Error("errMsg")
+      }
+      return orderId
+    },
+
+    // 接单失败
+    toError(errMsg) {
+      this.$router.push({
+        name: errPath,
+        params: { msg: errMsg ?? "订单已经被抢" }
+      })
+    },
+
+    onBtn() {
+      this.orderInfo.clerkOpenId ? this.startOrder() : this.orderTaking();
+    },
+
+    async startOrder() {
+      const orderId = this.getOrderId();
+      const clerkId = this.orderInfo.clerkOpenId;
+      if (!clerkId && clerkId !== this.getOpenIdX) {
+        return this.toError("该订单不属于你")
+      }
+      const [val, error] = await ASSIGN_ACCEPT({ orderId })
+      if (error || val.code != 2000) {
+        this.$message({
+          message: "接单失败",
+          type: "error"
+        })
+      } else {
+        this.orderInfo.status = 2;
+        this.$message({
+          message: "接单成功，请开始联系客户",
+          type: "success"
+        })
+      }
+    },
+
+    async orderTaking() {
+      const orderId = this.getOrderId();
+      const openId = this.getOpenIdX;
+      const [val, err] = await CLERK_ORDERTAKING({ orderId, openId })
+      if (err || val.code != 2000) {
+        return this.toError();
+      }
+      this.$message({
+        message: val.data || "接单成功",
+        type: "success"
+      })
+      this.orderInfo.clerkOpenId = openId;
+      this.orderInfo.status = 1;
+    }
   }
 }
+
 
 </script>
 
