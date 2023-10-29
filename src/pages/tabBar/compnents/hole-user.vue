@@ -3,9 +3,9 @@
     <!-- 头像名字 -->
     <div class="flex flex-col flex items-center relative">
       <div class="h-30 w-30 rounded-full overflow-hidden p-1 borderStyle border-5px border-solid border-primary">
-        <el-avatar :size="size" :src="avatarPath"></el-avatar>
+        <el-avatar :size="size" :src="getAvatarX"></el-avatar>
       </div>
-      <div class="text-3xl mt-4">{{ name }}</div>
+      <div class="text-3xl mt-4">{{ getUserNameX||'点击头像进行的登陆' }}</div>
       <div class="text-1xl mt-2" style="color:rgba(107, 114, 128) ;">WELCOME HOLE</div>
     </div>
     <!-- 钱包 -->
@@ -39,16 +39,18 @@
 <script>
 import { orderListPath, userPath } from '@/router/path'
 import walletMoney from '@/components/wallet-money.vue'
+import { mapGetters } from "vuex"
 export default {
-  name:userPath,
-  components:{
+  name: userPath,
+  components: {
     walletMoney
+  },
+  computed: {
+    ...mapGetters('userInfo', ['getUserNameX',"getAvatarX",""])
   },
   data() {
     return {
-      name: "Sheldon",
       size: 120,
-      avatarPath: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png",
       //订单状态
       orderState: [
         { name: "全部", iconPath: require('@/assets/icon/user/order/dingdan_dingdanliebiao.svg') },
@@ -93,7 +95,7 @@ export default {
   border-top-color: transparent;
 }
 
-.ribbon{
+.ribbon {
   margin-right: -$pageMargins ;
   margin-left: -$pageMargins ;
   padding: $pageMargins;

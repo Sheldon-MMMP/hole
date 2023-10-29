@@ -7,14 +7,15 @@ const appRoot = process.cwd() // 命令行运行的根目录
 const WindiCSSWebpackPlugin = require('windicss-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-
+const ASSET_PATH = process.env.ASSET_PATH || '/';
 const resolveApp = (resolvePath) => {
   return path.resolve(appRoot, resolvePath) // 获取指定目录的完整绝对路径
 }
 
 module.exports = {
-  entry: './src/main.js', // 默认是此目录，如若文件名称或者入口变更可修改
+  entry: '/src/main.js', // 默认是此目录，如若文件名称或者入口变更可修改
   output: {
+    publicPath: ASSET_PATH,
     path: resolveApp('dist'),
     filename: './js/[name].[hash:6].js',
     chunkFilename: './js/[name].chunk.[hash:4].js'

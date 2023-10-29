@@ -4,8 +4,9 @@
   "description": "## Project setup ``` pnpm install ```",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack serve --config webpack.dev.js --history-api-fallback",
-    "pro": "webpack serve --config webpack.pro.js"
+    "dev": "webpack serve --history-api-fallback --config webpack.dev.js",
+    "pro": "webpack serve --history-api-fallback --config webpack.pro.js",
+    "build":"npx webpack --config webpack.build.js"
   },
   "keywords": [],
   "author": "",

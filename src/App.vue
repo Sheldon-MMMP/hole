@@ -18,10 +18,17 @@ export default {
       if (err) return console.error(err);
       this.$store.dispatch('clerkLevel/setClerkLevel', val?.data)
     }
-
     // 验证是否登陆
-    const openId = this.$store.getters['userInfo/getOpenIdX'];
-    console.log(openId);
+    const localUrl = new URL(window.location.href);
+    const searchParams = new URLSearchParams(localUrl.search);
+    let openId = searchParams.get("openId");
+    if(openId){
+      this.$store.dispatch("userInfo/setUserInfo",{openId});
+      searchParams.delete("openId");
+      window.location.href = `${localUrl.origin}${localUrl.pathname}?${searchParams.toString()}`;
+    }else{
+      openId = this.$store.getters['userInfo/getOpenIdX'];
+    }
   },
   data() {
     return {

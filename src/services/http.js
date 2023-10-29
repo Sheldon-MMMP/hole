@@ -64,15 +64,15 @@ instance.interceptors.response.use(response => {
     // 服务器没有返回结果
     if (window.navigator.onLine && router.currentRoute.fullPath !== errPath) {
       //断网处理，可以跳转到断网页面
-      // router.push({
-      //   name: errPath,
-      //   params: {
-      //     msg: "没有连接到网络"
-      //   }
-      // })
-      return
+      router.push({
+        name: errPath,
+        params: {
+          msg: "没有连接到网络"
+        }
+      })
+      return [null, error]
     }
-    return Promise.reject(error)
+    return [null, error]
   }
 })
 
