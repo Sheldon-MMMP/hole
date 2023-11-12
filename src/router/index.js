@@ -10,14 +10,13 @@ import orderList from '@/pages/order/order-list.vue'
 import clerkApplication from '@/pages/clerk/application-clerk.vue'
 import * as path from "./path"
 import store from '@/store';
-import { HOLE_USER_INFO } from '@/services/api';
 Vue.use(router)
 
 
 const routes = [
   {
     path: '/',
-    name: '/init',
+    name: 'init',
     component: tabRouter,
     redirect: path.homePath,
     meta: {
@@ -100,6 +99,11 @@ const routes = [
     path: path.moneyRecharge,
     name: path.moneyRecharge,
     component: () => import("@/pages/order/money-recharge.vue")
+  },
+  {
+    path:path.orderSuccess,
+    name:path.orderSuccess,
+    component: () => import("@/pages/order/order-success.vue")
   }
 ]
 
@@ -110,18 +114,6 @@ export default new router({
   async scrollBehavior(to, from, savedPosition) {
     if (to.name !== from.name) {
       store.dispatch("params/setParams", to.params)
-    }
-    const userName = store.getters['userInfo/getUserNameX'];
-    console.log("获取userName"+userName);
-    if(!userName){
-      const openId = store.getters['userInfo/getOpenIdX'];
-      console.log("openId"+openId);
-      const [val,err] = await HOLE_USER_INFO({openId})
-      if(err||val.code!=2000){
-        console.error("获取用户信息失败");
-      }else{
-        store.dispatch("userInfo/setUserInfo",val.data)
-      }
     }
     if (savedPosition) {
       return savedPosition

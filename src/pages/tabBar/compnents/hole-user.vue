@@ -2,10 +2,11 @@
   <div class="pt-15 w-full flex flex-col">
     <!-- 头像名字 -->
     <div class="flex flex-col flex items-center relative">
-      <div class="h-30 w-30 rounded-full overflow-hidden p-1 borderStyle border-5px border-solid border-primary">
+      <div class="h-30 w-30 rounded-full overflow-hidden p-1 borderStyle border-5px border-solid border-primary"
+        @click="login">
         <el-avatar :size="size" :src="getAvatarX"></el-avatar>
       </div>
-      <div class="text-3xl mt-4">{{ getUserNameX||'点击头像进行的登陆' }}</div>
+      <div class="text-3xl mt-4">{{ getUserNameX || '点击头像进行的登陆' }}</div>
       <div class="text-1xl mt-2" style="color:rgba(107, 114, 128) ;">WELCOME HOLE</div>
     </div>
     <!-- 钱包 -->
@@ -23,7 +24,7 @@
       </div>
       <!-- 用户功能 -->
       <div class="">
-        <div v-for="item in functionList" :key="item.name" class="flexBC px-5 h-18 bg-white mt-5 rounded-2xl">
+        <div v-for="item in functionList" :key="item.name" @click="$router.push(item.to)" class="flexBC px-5 h-18 bg-white mt-5 rounded-2xl">
           <div class="flex">
             <img :src="item.iconPath" width="24" height="24">
             <span class="ml-5">{{ item.name }}</span>
@@ -37,16 +38,16 @@
 </template>
 
 <script>
-import { orderListPath, userPath } from '@/router/path'
+import { moneyRecharge, orderListPath, userPath } from '@/router/path'
 import walletMoney from '@/components/wallet-money.vue'
 import { mapGetters } from "vuex"
 export default {
-  name: userPath,
+  name: "user",
   components: {
     walletMoney
   },
   computed: {
-    ...mapGetters('userInfo', ['getUserNameX',"getAvatarX",""])
+    ...mapGetters('userInfo', ['getUserNameX', "getAvatarX"])
   },
   data() {
     return {
@@ -60,12 +61,14 @@ export default {
       ],
       // 功能列表
       functionList: [
-        { name: "我的账户", iconPath: require('@/assets/icon/tabBar/user_2_line.svg'), isShow: true },
-        { name: "店员申请", iconPath: require('@/assets/icon/common/user/shop.svg'), isShow: false }
+        { name: "充值银币", iconPath: require("@/assets/icon/tabBar/gift_line.svg"), isShow: true,to:moneyRecharge },
       ]
     }
   },
   methods: {
+    login() {
+      this.$store.getters['userInfo/getOpenIdX']
+    },
     toOrderPage(name) {
       this.$router.push({
         path: orderListPath,
@@ -74,7 +77,7 @@ export default {
         }
       })
     }
-  }
+  },
 }
 
 </script>

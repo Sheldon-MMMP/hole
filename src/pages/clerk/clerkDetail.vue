@@ -21,7 +21,7 @@
         <el-carousel :interval="5000" arrow="never" loop autoplay indicator-position="none"
           class="fixed top-0 h-500px w-full">
           <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index">
-            <el-image :src="$Url(item)" alt="" class="w-full" />
+            <el-image @load="imageShow" :src="$Url(item)" alt="" class="w-full" />
           </el-carousel-item>
         </el-carousel>
 
@@ -113,7 +113,7 @@
 </template>
 
 <script>
-import { giftPath, orderMenuPath } from "@/router/path";
+import { orderMenuPath } from "@/router/path";
 import goBack from '@/components/go-back.vue';
 import { CLERK_INFO_MES, PRICE_TABLE } from '@/services/api'
 import requireNone from '@/components/require-none.vue';
@@ -145,7 +145,6 @@ export default {
         img[item] = new Image();
         img[item].src = carouselList[item]
         img[item].onload = () => {
-          console.log('我变了');
           this.imageSpace = remInPixels20;
           img.forEach((imageItem)=>{
             imageItem.onload = null;
@@ -218,6 +217,11 @@ export default {
     }
   },
   methods: {
+    imageShow(){
+      if(this.imageSpace!==remInPixels20){
+        this.imageSpace = remInPixels20;
+      }
+    },
     //底部按钮处理函数
     onBottom(name) {
       switch (name) {
@@ -229,7 +233,8 @@ export default {
               params: {
                 price: this.price,
                 clerkId: this.$route.query.clerkId,
-                level: this.clerkInfo.level
+                level: this.clerkInfo.level,
+                clerkImage:this.clerkInfo.carouselList[0],
               }
             });
           else

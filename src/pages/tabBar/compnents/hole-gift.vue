@@ -38,10 +38,9 @@
 </template>
 
 <script>
-import { giftPath } from '@/router/path';
 import { orderMenuPath } from '@/router/path';
 export default {
-  name:giftPath,
+  name:"gift",
   data() {
     return {
       label: [

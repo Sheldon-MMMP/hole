@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { CLERK_LEVEL_LIST } from '@/services/api'
+import { CLERK_LEVEL_LIST,HOLE_USER_INFO } from '@/services/api'
 import { errPath } from './router/path';
 export default {
   name: 'App',
@@ -21,18 +21,20 @@ export default {
     // 验证是否登陆
     const localUrl = new URL(window.location.href);
     const searchParams = new URLSearchParams(localUrl.search);
-    let openId = searchParams.get("openId");
-    if(openId){
-      this.$store.dispatch("userInfo/setUserInfo",{openId});
-      searchParams.delete("openId");
-      window.location.href = `${localUrl.origin}${localUrl.pathname}?${searchParams.toString()}`;
-    }else{
-      openId = this.$store.getters['userInfo/getOpenIdX'];
+    let openId = searchParams.get("openId")??this.$store.getters['userInfo/getOpenIdX'];
+    if (openId) {
+      this.$store.dispatch("userInfo/setUserInfo", { openId });
+      const [val, err] = await HOLE_USER_INFO({ openId });
+      if (err || val.code != 2000) {
+        console.error("获取用户信息失败");
+      } else {
+        this.$store.dispatch("userInfo/setUserInfo", val.data)
+      }
     }
   },
   data() {
     return {
-      include: ['/'],
+      include: [],
       pageAnimate: { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" },
     }
   },
@@ -80,5 +82,15 @@ button {
   outline: none;
   /*清除默认背景 */
   background-color: transparent;
+}
+
+// message-box 样式设置
+.el-message-box__wrapper {
+  padding: 0 $pageMargins;
+
+  .el-message-box {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 </style>

@@ -11,7 +11,7 @@
 
     <div class="list mt-4">
       <el-empty :image-size="200" v-if="!clerkList.length"></el-empty>
-      <waterfall :clerkList="clerkList" v-else></waterfall>
+      <waterfall :clerkList="clerkList" :isReload="waterfallIsReload" v-else></waterfall>
     </div>
   </div>
 </template>
@@ -28,15 +28,14 @@ export default {
   data() {
     return {
       input: '',
-      clerkList:[]
+      clerkList:[],
+      waterfallIsReload:true,
     }
   },
   methods: {
-    handleCommand() {
-      console.log(1)
-    },
     // 获取店员列表
     async getClerkInfo() {
+      this.waterfallIsReload = !this.waterfallIsReload;
       const [val,error] = await GET_CLERK_INFO(this.input)
       if (error) {
         console.log(error)

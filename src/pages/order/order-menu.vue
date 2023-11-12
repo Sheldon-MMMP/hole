@@ -32,7 +32,7 @@
         <div slot="reference" class="text-[#f00] text-xl  flex-1">{{ totalAmount }}<span class="ml-1 text-sm">银币</span>
         </div>
       </el-popover>
-      <el-button type="primary" class="h-10 !rounded-full w-[40%]" :round="true" @click="submitOrder">{{
+      <el-button type="primary" class="h-10 !rounded-full w-[40%]" :round="true" @click="submitOrder" :loading="button_loading">{{
         moneyIsEnough ? "下单" : "充值" }}
       </el-button>
     </div>
@@ -46,7 +46,7 @@ import inputForm from "@/components/input-form.vue";
 import { mapGetters, mapState } from "vuex";
 import { moneyRecharge } from "@/router/path";
 import router from "@/router";
-import {orderTakePath} from "@/router/path"
+import {orderTakePath,orderSuccess} from "@/router/path"
 export default {
   components: {
     goBack,
@@ -71,7 +71,9 @@ export default {
       clerkId: "",
       level: "",
       levelList: [],
-      selectLevel: ""
+      selectLevel: "",
+      // 按钮等待
+      button_loading:false
     }
   },
   methods: {
@@ -82,42 +84,39 @@ export default {
     },
     //提交支付订单
     async submitOrder() {
-      if (!this.moneyIsEnough) return this.$router.push(moneyRecharge)
       const orderObject = {
         time: this.serverTime,
         type: this.serverType,
         totalMoney: this.totalAmount,
         wxNumber: this.weChatInput,
         count: this.num,
-        remark: this.remarkInput,
+        remark: this.remarkInput+this.$store.state.params?.remark??"",
         orderType: this.level?1:0,
         clerkId: this.clerkId,
         orderLevel: this.level||this.selectLevel,
         userOpenId: this.getOpenIdX,
         userName: this.getUserNameX,
         price:this.amount,
-        url:window.location.origin+"/#"+orderTakePath
+        url:window.location.origin+orderTakePath
       }
-      // if (!orderObject.getOpenIdX) {
-      //   return this.$message({
-      //     type:"error",
-      //     message:"请先登陆"
-      //   })
-      // }
-      const remark = this.$store.state.params?.remark;
-      if(remark){
-        orderObject.remark+=remark
+      if (!orderObject.userOpenId&&!orderObject.wxNumber) {
+        return this.$message({
+          type:"error",
+          message:"请先登陆或没有输入微信号"
+        })
       }
       if (!this.moneyIsEnough) {
-        return this.$message({
+        this.$message({
           type: "error",
           dangerouslyUseHTMLString: true,
           message: `余额不足请充值`
         })
+        return this.$router.push(moneyRecharge)
       }
-      //临时车测试数据
+      //临时测试数据
       orderObject.clerkId = 1114;
       //结束
+      this.button_loading =true;
       const [val, err] = await RECEIVE_ORDER(orderObject);
       if (err || val.code !== 2000) {
         return this.$message({
@@ -125,7 +124,12 @@ export default {
           message: val?.data || "订单信息有误"
         })
       }
-
+      this.$router.replace({
+        name:orderSuccess,
+        params:{
+          clerkImage:this.$route.params.clerkImage
+        }
+      });
     }
   },
   computed: {

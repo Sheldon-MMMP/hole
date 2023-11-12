@@ -3,7 +3,9 @@ import axios from 'axios'
 import router from '@/router/index'
 import { errPath } from '@/router/path';
 import baseURL from './url';
+import { Loading } from 'element-ui';
 
+let loadingInstance
 
 const instance = axios.create({
   baseURL: baseURL,

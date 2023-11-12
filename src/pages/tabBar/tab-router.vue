@@ -8,7 +8,7 @@
         </keep-alive>
       </transition>
     </div>
-    <div class="fixed bottom-5 z-99999" :style="{ width: widthTabBar }">
+    <div class="fixed bottom-5 z-99" :style="{ width: widthTabBar }">
       <tabBar-bottom :current="current" ref="tabBar"></tabBar-bottom>
     </div>
   </div>
@@ -17,7 +17,7 @@
 <script>
 import tabBarBottom from '@/pages/tabBar/compnents/tabBar-bottom.vue';
 export default {
-  name:"/",
+  name:"init",
   components: {
     tabBarBottom,
   },

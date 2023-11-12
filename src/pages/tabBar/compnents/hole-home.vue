@@ -46,7 +46,7 @@
         </div>
         <div class="list mt-4">
           <el-empty :image-size="200" v-if="!clerkList.length"></el-empty>
-          <waterfall :pWidth="pWidth" :clerkList="clerkList" v-else></waterfall>
+          <waterfall :pWidth="pWidth" :isReload="waterfallIsReload" :clerkList="clerkList" v-else></waterfall>
         </div>
       </div>
     </template>
@@ -58,20 +58,19 @@ import waterfall from '@/layouts/waterfall.vue'
 
 import betterScroll from '@/layouts/better-scroll.vue';
 import { NEW_CLERK_LIST, SWIPER_HOME, CLERK_INFO } from '@/services/api';
-import { homePath } from '@/router/path';
 export default {
-  name: homePath,
+  name: "home",
   mounted() {
     //请求页面的数据
     Promise.allSettled([NEW_CLERK_LIST(), SWIPER_HOME(), CLERK_INFO({ pageNum: ++this.pageNum, pageSize: this.pageSize })]).then(res => {
       if (res[0].value) {
-        this.clerkNewList = res[0]?.value[0]?.data
+        this.clerkNewList = res[0]?.value[0]?.data??[]
       }
       if (res[1].value) {
-        this.bookSwiper = res[1]?.value[0]?.data;
+        this.bookSwiper = res[1]?.value[0]?.data??[];
       }
       if (res[2].value) {
-        this.clerkList = res[2]?.value[0]?.data
+        this.clerkList = res[2]?.value[0]?.data??[]
       }
     }).catch(err => {
       console.error(err);
@@ -99,7 +98,8 @@ export default {
         gender: { name: "性别", list: ['不限', '男', '女'], value: '' },
         grade: { name: "等级", list: ['不限', 'Lv.01', 'Lv.02', 'Lv.03'], value: "" },
       },
-
+      // 瀑布流是否重新加载
+      waterfallIsReload:false,
       // 轮播图图片
       bookSwiper: [],
       // 店员列表
@@ -126,6 +126,7 @@ export default {
       this.$set(this.clerkFilter[value[0]], 'value', value[1]);
     },
     async getClerkList() {
+      this.waterfallIsReload = !this.waterfallIsReload;
       const _this = this.clerkFilter
       const sex = _this.gender.value === '女' ? 8 : _this.gender.value === '男' ? 9 : undefined;
       const Level = _this.grade.value === "不限" ? undefined : _this.grade.value;

@@ -10,6 +10,7 @@ export const orderListPath = '/order/list'
 export const orderMenuPath = '/order/select'
 export const orderTakePath = "/order/take"
 export const moneyRecharge = "/money/recharge"
+export const orderSuccess  = '/order/success'
 
 // clerk
 export const clerkDetailPath = '/clerk/detail'
@@ -18,4 +19,3 @@ export const clerkApplicationBasicPath = '/clerk/application/basic'
 export const clerkApplicationWorkPath = '/clerk/application/work'
 export const clerkApplicationFilesPath = '/clerk/application/files'
 export const searchPagePath = '/search'
-
