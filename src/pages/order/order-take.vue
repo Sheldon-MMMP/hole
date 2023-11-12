@@ -17,17 +17,17 @@
             </div>
             <div class="flex-1" v-if="!openIdAuth">
               <div class="subhead text-[#898989] text-14px mb-10px">微信号</div>
-              <div class="text-[#120D26] text-18px">{{ orderInfo.wxNumber }}</div>
+              <div class="text-[#120D26] text-18px">{{ isShowWX?orderInfo.wxNumber:'****' }}</div>
             </div>
           </div>
           <div class="flex mt-5">
             <div class="flex-1">
               <div class="subhead text-[#898989] text-14px mb-10px">日期</div>
-              <div class="text-[#120D26] text-18px">{{ orderInfo.createTime }}</div>
+              <div class="text-[#120D26] text-18px">{{ orderInfo.date }}</div>
             </div>
             <div>
               <div class="subhead text-[#898989] text-14px mb-10px">时间</div>
-              <div class="text-[#120D26] text-18px">{{ orderInfo.createTime }}</div>
+              <div class="text-[#120D26] text-18px">{{ orderInfo.time }}</div>
             </div>
           </div>
           <div class="mt-5">
@@ -55,6 +55,7 @@
 import goBack from '@/components/go-back.vue';
 import { errPath } from '@/router/path';
 import { ORDER_DETAIL, ASSIGN_ACCEPT, CLERK_ORDERTAKING } from '@/services/api';
+import dayjs from 'dayjs';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -64,6 +65,8 @@ export default {
   data() {
     return {
       hintImage: 'https://api.r10086.com/樱道随机图片api接口.php?自适应图片系列=原神',
+      // 是否显示微信
+      isShowWX:false,
       orderInfo: {
         orderType: 0,
         userName: "未知",
@@ -73,6 +76,8 @@ export default {
         wxNumber: "未知",
         openId: "",
         clerkId: "",
+        date:"xxxx年xx月xx日",
+        time:"HH:HH:HH"
       },
     }
   },
@@ -82,7 +87,13 @@ export default {
     if (error || val.code != 2000 || this.openIdAuth) {
       this.toError("订单被抢");
     }
-    this.orderInfo = val.data
+    this.orderInfo = val.data;
+    const orderInfo= this.orderInfo;
+    const createTime =dayjs.unix(parseInt(orderInfo.createTime));
+    const date = createTime.format('YYYY-MM-DD')
+    const time = createTime.format('HH:mm:ss');
+    this.$set(this.orderInfo,'date',date);
+    this.$set(this.orderInfo,'time',time)
   },
 
   computed: {
