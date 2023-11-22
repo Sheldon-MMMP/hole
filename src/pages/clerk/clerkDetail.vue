@@ -18,7 +18,7 @@
           </div>
         </go-back>
         <!-- 用户照片展示轮播图 -->
-        <el-carousel :interval="5000" arrow="never" loop autoplay indicator-position="none"
+        <el-carousel @touchstart.native="start($event)" @touchmove.native="move($event)" :interval="5000" arrow="none" ref="nop" autoplay indicator-position="none"
           class="fixed top-0 h-500px w-full">
           <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index">
             <el-image @load="imageShow" :src="$Url(item)" alt="" class="w-full" />
@@ -146,7 +146,7 @@ export default {
         img[item].src = carouselList[item]
         img[item].onload = () => {
           this.imageSpace = remInPixels20;
-          img.forEach((imageItem)=>{
+          img.forEach((imageItem) => {
             imageItem.onload = null;
           })
         }
@@ -170,6 +170,8 @@ export default {
   },
   data() {
     return {
+      //轮播图宽度
+      slideWrapperWidth: 0,
       hidden: "overflow-x-scroll",
       // 加载动画
       loading: true,
@@ -217,8 +219,8 @@ export default {
     }
   },
   methods: {
-    imageShow(){
-      if(this.imageSpace!==remInPixels20){
+    imageShow() {
+      if (this.imageSpace !== remInPixels20) {
         this.imageSpace = remInPixels20;
       }
     },
@@ -234,7 +236,7 @@ export default {
                 price: this.price,
                 clerkId: this.$route.query.clerkId,
                 level: this.clerkInfo.level,
-                clerkImage:this.clerkInfo.carouselList[0],
+                clerkImage: this.clerkInfo.carouselList[0],
               }
             });
           else
@@ -256,6 +258,35 @@ export default {
       } else {
         this.hidden = "overflow-hidden"
       }
+    },
+
+    // 轮播图手滑动
+
+    start(e) {
+      this.startX = e.touches[0].clientX;
+      this.startY = e.touches[0].clientY;
+    },
+    move(e) {
+      this.moveX = e.touches[0].clientX;
+      this.moveY = e.touches[0].clientY;
+      var nowtime = new Date().getTime();
+      if (this.startTime == undefined || nowtime > this.startTime) {
+        if (this.startX - this.moveX <= 0) { // 右滑触发
+          this.prev();
+          return false;
+        } else {
+          this.next();
+          return false;
+        }
+      }
+    },
+    prev() {
+      this.$refs.nop.prev();
+      this.startTime = new Date().getTime() + 500;
+    },
+    next() {
+      this.$refs.nop.next();
+      this.startTime = new Date().getTime() + 500;
     },
   },
   destroyed() {
