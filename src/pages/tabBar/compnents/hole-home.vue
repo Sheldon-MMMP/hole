@@ -19,7 +19,7 @@
       <div class="Information" v-if="bookSwiper.length">
         <h2 class="m-1 text-primary-black text-2xl">资讯</h2>
         <el-carousel :interval="4000" type="card" height="100px" arrow="never" autoplay class="swiper-box">
-          <el-carousel-item v-for="(item,index) in bookSwiper" :key="index">
+          <el-carousel-item v-for="(item, index) in bookSwiper" :key="index">
             <el-image :src="$Url(item.imagePath)" fit="fill" class="w-full h-full"></el-image>
           </el-carousel-item>
         </el-carousel>
@@ -58,26 +58,24 @@ import waterfall from '@/layouts/waterfall.vue'
 
 import betterScroll from '@/layouts/better-scroll.vue';
 import { NEW_CLERK_LIST, SWIPER_HOME, CLERK_INFO } from '@/services/api';
+
+
 export default {
   name: "home",
   mounted() {
+    const dataName = ['clerkNewList','bookSwiper','clerkList']
     //请求页面的数据
     Promise.allSettled([NEW_CLERK_LIST(), SWIPER_HOME(), CLERK_INFO({ pageNum: ++this.pageNum, pageSize: this.pageSize })]).then(res => {
-      if (res[0].value) {
-        this.clerkNewList = res[0]?.value[0]?.data??[]
+      const index = -1;
+      for(let item of res){
+        index++;
+        if(item?.value) continue;
+        this[dataName[index]] = item.value[0].data??[];
       }
-      if (res[1].value) {
-        this.bookSwiper = res[1]?.value[0]?.data??[];
-      }
-      if (res[2].value) {
-        this.clerkList = res[2]?.value[0]?.data??[]
-      }
+      this.loading = false
     }).catch(err => {
       console.error(err);
     })
-    setTimeout(() => {
-      this.loading = false
-    }, 500);
   },
   components: {
     betterScroll,
@@ -99,7 +97,7 @@ export default {
         grade: { name: "等级", list: ['不限', 'Lv.01', 'Lv.02', 'Lv.03'], value: "" },
       },
       // 瀑布流是否重新加载
-      waterfallIsReload:false,
+      waterfallIsReload: false,
       // 轮播图图片
       bookSwiper: [],
       // 店员列表
@@ -151,7 +149,8 @@ export default {
 .new-people-list {
   margin-right: -$pageMargins;
 }
-::v-deep .el-carousel__item{
+
+::v-deep .el-carousel__item {
   border-radius: 16px;
   overflow: hidden;
 }
