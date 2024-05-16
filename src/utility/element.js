@@ -24,7 +24,8 @@ import {
   Carousel,
   CarouselItem,
   InputNumber,
-  Popover
+  Popover,
+  Switch
 } from 'element-ui';
 
 const element = [
@@ -50,7 +51,8 @@ const element = [
   Carousel,
   CarouselItem,
   InputNumber,
-  Popover
+  Popover,
+  Switch
 ]
 
 Vue.prototype.$message = Message;

@@ -63,13 +63,13 @@ import { NEW_CLERK_LIST, SWIPER_HOME, CLERK_INFO } from '@/services/api';
 export default {
   name: "home",
   mounted() {
-    const dataName = ['clerkNewList','bookSwiper','clerkList']
+    const dataName = ['clerkNewList','bookSwiper','clerkList'];
     //请求页面的数据
     Promise.allSettled([NEW_CLERK_LIST(), SWIPER_HOME(), CLERK_INFO({ pageNum: ++this.pageNum, pageSize: this.pageSize })]).then(res => {
-      const index = -1;
+      let index = -1;
       for(let item of res){
         index++;
-        if(item?.value) continue;
+        if(!item?.value) continue;
         this[dataName[index]] = item.value[0].data??[];
       }
       this.loading = false

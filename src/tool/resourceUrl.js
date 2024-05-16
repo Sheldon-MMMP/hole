@@ -5,6 +5,7 @@ export default (imageUrl)=>{
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     } else {
+      console.log(baseURL,imageUrl);
       return baseURL + imageUrl;
     }
   }

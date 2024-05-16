@@ -7,44 +7,47 @@
 </template>
 
 <script>
-import { CLERK_LEVEL_LIST,HOLE_USER_INFO } from '@/services/api'
-import { errPath } from './router/path';
+import { CLERK_LEVEL_LIST } from '@/services/api'
+import { errPath, clerkPage } from './router/path';
+import { userLogin, clerkLogin } from '@/hooks/module/login'
+const insertAnimate = { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" }
+const pushAnimate = { enter: 'animate__slideInLeft', leave: 'animate__slideOutRight', animate: "animate__animated" }
 export default {
   name: 'App',
   async created() {
-    const clerkLevelList = this.$store.state.clerkLevel.clerkLevelList;
+    const store = this.$store
+    const clerkLevelList = store.state.clerkLevel.clerkLevelList;
     if (clerkLevelList.length === 0) {
       const [val, err] = await CLERK_LEVEL_LIST();
       if (err) return console.error(err);
-      this.$store.dispatch('clerkLevel/setClerkLevel', val?.data)
+      store.dispatch('clerkLevel/setClerkLevel', val?.data)
     }
     // 验证是否登陆
-    const localUrl = new URL(window.location.href);
+    const hrefhttp = window.location.href;
+    let isUserPage = true;
+    // 验证是店员手机端还是用户手机端
+    clerkPage.forEach((path) => {
+      hrefhttp.includes(path) && (isUserPage = false)
+    });
+    const localUrl = new URL(hrefhttp);
     const searchParams = new URLSearchParams(localUrl.search);
-    let openId = searchParams.get("openId")??this.$store.getters['userInfo/getOpenIdX'];
-    if (openId) {
-      this.$store.dispatch("userInfo/setUserInfo", { openId });
-      const [val, err] = await HOLE_USER_INFO({ openId });
-      if (err || val.code != 2000) {
-        console.error("获取用户信息失败");
-      } else {
-        this.$store.dispatch("userInfo/setUserInfo", val.data)
-      }
-    }
+    const id = searchParams.get("openId");
+    console.log("isUserPage:",isUserPage);
+    isUserPage ? userLogin(id) : clerkLogin(id);
   },
   data() {
     return {
       include: [],
-      pageAnimate: { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" },
+      pageAnimate: insertAnimate,
     }
   },
   watch: {
     $route(to, from) {
       if (to.name === errPath || from.name === errPath) this.pageAnimate.animate = "";
       else if (to.matched.length < from.matched.length)
-        this.pageAnimate = { enter: 'animate__slideInRight', leave: 'animate__slideOutLeft', animate: "animate__animated" }
+        this.pageAnimate = insertAnimate
       else
-        this.pageAnimate = { enter: 'animate__slideInLeft', leave: 'animate__slideOutRight', animate: "animate__animated" }
+        this.pageAnimate = pushAnimate
       if (to.meta.keepAlive) {
         !this.include.includes(to.name) && this.include.push(to.name);
       }
@@ -70,6 +73,10 @@ export default {
 .pageContent {
   padding: 0 $pageMargins;
   min-height: 100vh;
+}
+
+.noMargin {
+  margin: 0 calc(-$pageMargins);
 }
 
 input:focus {

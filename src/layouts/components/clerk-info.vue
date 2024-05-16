@@ -14,8 +14,8 @@
         </div>
         <span class="bg-[#15de97] h-2 w-2 inline-block rounded-1 ml-1" v-if="clerk.onlineStatus"></span>
       </div>
-      <div class="text-sm text-center">
-        <span class="label text-10px" v-for="(itemLabel, index) in clerk.label" :key="index">{{ itemLabel }}</span>
+      <div class="text-sm text-center divide-x">
+        <span class="text-10px px-2" v-for="(itemLabel, index) in clerk.label" :key="index">{{ itemLabel }}</span>
       </div>
     </div>
   </div>

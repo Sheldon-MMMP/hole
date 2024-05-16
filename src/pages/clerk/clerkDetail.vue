@@ -21,7 +21,7 @@
         <el-carousel @touchstart.native="start($event)" @touchmove.native="move($event)" :interval="5000" arrow="none" ref="nop" autoplay indicator-position="none"
           class="fixed top-0 h-500px w-full">
           <el-carousel-item v-for="(item, index) in clerkInfo.carouselList" :key="index">
-            <el-image @load="imageShow" :src="$Url(item)" alt="" class="w-full" />
+            <el-image @load="imageShow" :src="$Url(item.imagePath)" alt="" class="w-full" />
           </el-carousel-item>
         </el-carousel>
 

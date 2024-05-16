@@ -99,7 +99,7 @@ export default {
         price:this.amount,
         url:window.location.origin+orderTakePath
       }
-      if (!orderObject.userOpenId&&!orderObject.wxNumber) {
+      if (!orderObject.userOpenId||!orderObject.wxNumber) {
         return this.$message({
           type:"error",
           message:"请先登陆或没有输入微信号"
@@ -119,6 +119,7 @@ export default {
       this.button_loading =true;
       const [val, err] = await RECEIVE_ORDER(orderObject);
       if (err || val.code !== 2000) {
+        this.button_loading =false;
         return this.$message({
           type: "error",
           message: val?.data || "订单信息有误"

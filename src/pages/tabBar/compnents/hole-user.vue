@@ -1,14 +1,7 @@
 <template>
   <div class="pt-15 w-full flex flex-col">
     <!-- 头像名字 -->
-    <div class="flex flex-col flex items-center relative">
-      <div class="h-30 w-30 rounded-full overflow-hidden p-1 borderStyle border-5px border-solid border-primary"
-        @click="login">
-        <el-avatar :size="size" :src="getAvatarX"></el-avatar>
-      </div>
-      <div class="text-3xl mt-4">{{ getUserNameX || '点击头像进行的登陆' }}</div>
-      <div class="text-1xl mt-2" style="color:rgba(107, 114, 128) ;">WELCOME HOLE</div>
-    </div>
+    <user-avatar></user-avatar>
     <!-- 钱包 -->
     <wallet-money></wallet-money>
     <!-- 背景变色区 -->
@@ -24,7 +17,10 @@
       </div>
       <!-- 用户功能 -->
       <div class="">
-        <div v-for="item in functionList" :key="item.name" @click="$router.push(item.to)" class="flexBC px-5 h-18 bg-white mt-5 rounded-2xl">
+        <div v-for="item in functionList" 
+            :key="item.name" 
+            @click="$router.push(item.to)" 
+            class="flexBC px-5 h-18 bg-white mt-5 rounded-2xl">
           <div class="flex">
             <img :src="item.iconPath" width="24" height="24">
             <span class="ml-5">{{ item.name }}</span>
@@ -40,18 +36,18 @@
 <script>
 import { moneyRecharge, orderListPath, userPath } from '@/router/path'
 import walletMoney from '@/components/wallet-money.vue'
-import { mapGetters } from "vuex"
+import userAvatar from '@/components/user-avatar.vue'
+
 export default {
   name: "user",
   components: {
-    walletMoney
+    walletMoney,
+    userAvatar
   },
-  computed: {
-    ...mapGetters('userInfo', ['getUserNameX', "getAvatarX"])
-  },
+
   data() {
     return {
-      size: 120,
+
       //订单状态
       orderState: [
         { name: "全部", iconPath: require('@/assets/icon/user/order/dingdan_dingdanliebiao.svg') },
@@ -66,9 +62,7 @@ export default {
     }
   },
   methods: {
-    login() {
-      this.$store.getters['userInfo/getOpenIdX']
-    },
+
     toOrderPage(name) {
       this.$router.push({
         path: orderListPath,
@@ -86,22 +80,11 @@ export default {
 .orderState {
   box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.1);
 }
-
-// 半圆圈
-.borderStyle {
-  width: 139px;
-  height: 139px;
-  border-radius: 50%;
-  /*以下五个属性为水平垂直居中的方法*/
-  box-sizing: border-box;
-  border-left-color: transparent;
-  border-top-color: transparent;
-}
-
 .ribbon {
   margin-right: -$pageMargins ;
   margin-left: -$pageMargins ;
   padding: $pageMargins;
   margin-top: $pageMargins;
 }
+
 </style>

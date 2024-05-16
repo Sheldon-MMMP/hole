@@ -8,6 +8,7 @@ import clerkDetail from '@/pages/clerk/clerkDetail.vue'
 import errPage from '@/pages/error/err-page.vue'
 import orderList from '@/pages/order/order-list.vue'
 import clerkApplication from '@/pages/clerk/application-clerk.vue'
+import clerkHome from '@/pages/clerk/clerk-home.vue';
 import * as path from "./path"
 import store from '@/store';
 Vue.use(router)
@@ -46,6 +47,11 @@ const routes = [
     name: path.clerkDetailPath,
     path: path.clerkDetailPath,
     component: clerkDetail,
+  },
+  {
+    name:path.clerkHome,
+    path:path.clerkHome,
+    component:clerkHome
   },
   {
     name: path.errPath,

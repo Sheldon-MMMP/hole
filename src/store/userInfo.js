@@ -7,6 +7,7 @@ const userInfo = {
     headUrl: "https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png",
     openId: "",
     wxNumber: "",
+    
   }),
   mutations: {
     SET_USER_INFO(state, data) {
@@ -42,12 +43,11 @@ const userInfo = {
           center: true,
         }).then(async () => {
           // 跳转登陆页面
-          window.Loginlock = true
           const url = window.location.href;
           location.replace(`${baseURL}/wechat/authorize?returnUrl=${url}`);
         }).catch(() => {
-          window.Loginlock = true
         })
+        window.Loginlock = true
         return null;
       }
       return openId

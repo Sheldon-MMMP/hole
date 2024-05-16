@@ -34,5 +34,9 @@ export const CREATE_CLERK = (data) => api(`/clerk/addNewClerk`, 'post', data)
 export const GET_CLERK_INFO = (data) => api(`/clerk/info/search/${data}`)
 //获取等级列表
 export const CLERK_LEVEL_LIST = () => api(`/holeLevel/level-list`)
+//获取店员自己的信息
+export const CLERK_INFO_SELF = (data) => api(`/terminal/clerk/info/${data?.clerkId}`);
+//店员修改在线状态
+export const UPDATE_ONLIEN = (data) => api(`/terminal/clerk/update/online/$data?.clerkId}`);
 
 
